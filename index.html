@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mario's Media | Full Control Portal</title>
+    <title>Mario's Media | Official Portal</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -20,269 +20,160 @@
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { font-family: 'Inter', sans-serif; background: var(--bg-color); color: var(--text-primary); padding: 20px; max-width: 1200px; margin: 0 auto; line-height: 1.6; }
 
-        header { display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 15px; padding: 40px 0; border-bottom: 1px solid var(--border-color); margin-bottom: 40px; }
-        .logo { height: 120px; object-fit: contain; filter: drop-shadow(0 0 10px rgba(255,255,255,0.1)); display: none; }
-        .site-title { font-size: 2.5rem; font-weight: 800; letter-spacing: -1px; }
+        header { display: flex; align-items: center; justify-content: center; padding: 40px 0; border-bottom: 1px solid var(--border-color); margin-bottom: 40px; }
+        .logo { height: 160px; width: auto; object-fit: contain; filter: drop-shadow(0 0 15px rgba(0,210,255,0.2)); }
 
         .panel { background: var(--surface-color); padding: 25px; border-radius: var(--radius); border: 1px solid var(--border-color); margin-bottom: 30px; max-width: 500px; margin-inline: auto; }
         #admin-panel { display: none; border-left: 5px solid var(--primary-color); }
-        .input-group { margin-bottom: 15px; }
-        label { display: block; font-size: 0.75rem; color: var(--text-secondary); margin-bottom: 5px; font-weight: 700; text-transform: uppercase; }
-        input, textarea { width: 100%; padding: 12px; background: var(--bg-color); border: 1px solid var(--border-color); color: white; border-radius: 8px; font-family: inherit; }
+        
+        input, textarea { width: 100%; padding: 12px; background: var(--bg-color); border: 1px solid var(--border-color); color: white; border-radius: 8px; margin-bottom: 15px; font-family: inherit; }
         button { width: 100%; padding: 12px; border: none; border-radius: 8px; font-weight: 700; cursor: pointer; transition: 0.2s; background: white; color: black; }
         button:hover:not(:disabled) { background: var(--primary-color); color: white; }
-        button:disabled { opacity: 0.5; cursor: not-allowed; }
+        button:disabled { opacity: 0.4; cursor: not-allowed; }
 
-        /* News Feed */
         .horizontal-scroll { display: flex; overflow-x: auto; gap: 20px; padding-bottom: 25px; scrollbar-width: thin; }
         .news-card { min-width: 300px; max-width: 300px; background: var(--surface-color); border-radius: var(--radius); border: 1px solid var(--border-color); overflow: hidden; cursor: pointer; transition: 0.3s; }
-        .news-card:hover { transform: translateY(-8px); border-color: var(--accent-color); }
+        .news-card:hover { transform: translateY(-5px); border-color: var(--accent-color); }
         .card-img { width: 100%; height: 180px; object-fit: cover; }
         .card-body { padding: 20px; }
 
-        /* Modal */
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 1000; overflow-y: auto; padding: 20px; }
-        .modal-content { background: var(--surface-color); max-width: 850px; margin: 40px auto; border-radius: var(--radius); overflow: hidden; position: relative; }
-        .close-btn { position: absolute; top: 20px; right: 25px; font-size: 2.5rem; color: white; cursor: pointer; z-index: 10; }
+        .modal-content { background: var(--surface-color); max-width: 800px; margin: 40px auto; border-radius: var(--radius); overflow: hidden; position: relative; }
         .full-body { padding: 40px; }
 
-        /* Interaction Bar (The Restored Style) */
-        .interaction-bar { display: flex; gap: 15px; padding: 25px 0; border-top: 1px solid var(--border-color); border-bottom: 1px solid var(--border-color); margin-bottom: 30px; }
-        .btn-action { width: auto; padding: 10px 25px; background: var(--bg-color); color: white; border: 1px solid var(--border-color); font-size: 1rem; display: flex; align-items: center; gap: 8px; }
-        .btn-action.voted { border-color: var(--primary-color); background: rgba(230, 57, 70, 0.15); }
+        .interaction-bar { display: flex; gap: 15px; margin: 25px 0; border-top: 1px solid var(--border-color); padding-top: 20px; }
+        .btn-action { width: auto; padding: 10px 20px; background: var(--bg-color); color: white; border: 1px solid var(--border-color); }
+        .btn-action.voted { border-color: var(--accent-color); background: rgba(0, 210, 255, 0.1); }
 
-        /* Admin Action Buttons */
         .admin-controls { display: flex; gap: 10px; margin-bottom: 20px; }
-        .btn-delete { background: #441111; color: #ff5555; border: 1px solid #662222; width: auto; padding: 8px 15px; font-size: 0.8rem; }
-        .btn-edit { background: #112233; color: #55aaff; border: 1px solid #224466; width: auto; padding: 8px 15px; font-size: 0.8rem; }
-
-        /* Comments */
-        .comment-main { display: flex; gap: 12px; background: rgba(255,255,255,0.03); padding: 15px; border-radius: 12px; border: 1px solid var(--border-color); margin-bottom: 10px; }
-        .user-avatar { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; background: #333; }
-        .user-name { font-weight: 700; color: var(--accent-color); font-size: 0.9rem; }
-        .comment-date { font-size: 0.7rem; color: var(--text-secondary); }
-        .replies-container { margin-left: 52px; border-left: 2px solid var(--border-color); padding-left: 15px; margin-bottom: 20px; }
+        .btn-delete { background: #441111; color: #ff5555; width: auto; font-size: 0.8rem; }
+        .btn-edit { background: #112233; color: #55aaff; width: auto; font-size: 0.8rem; }
     </style>
 </head>
 <body>
 
     <header>
-        <img src="" alt="Logo" class="logo" id="header-logo">
-        <h1 class="site-title" id="site-title">MARIO'S MEDIA</h1>
+        <img src="1000872523.png" alt="Mario's Media" class="logo">
     </header>
 
     <div class="panel" id="login-panel">
-        <h3 style="margin-bottom:20px">Join the Portal</h3>
-        <div class="input-group"><label>Email</label><input type="email" id="email-input"></div>
-        <div class="input-group"><label>Name</label><input type="text" id="name-input"></div>
-        <div class="input-group"><label>Profile Picture</label><input type="file" id="pfp-input" accept="image/*"></div>
+        <h3 style="margin-bottom:15px">Staff & Reader Login</h3>
+        <input type="email" id="email-input" placeholder="Enter your email">
         <button onclick="login()">Access Portal</button>
     </div>
 
     <div class="panel" id="admin-panel">
-        <h3>Site Branding</h3>
-        <input type="file" id="logo-upload" accept="image/*" style="margin-bottom:10px">
-        <button onclick="updateLogo()">Save Logo</button>
-        <div style="margin:20px 0; border-top:1px solid var(--border-color)"></div>
-        <h3>Publish News</h3>
-        <div class="input-group"><label>Headline</label><input type="text" id="post-title"></div>
-        <div class="input-group"><label>Photo</label><input type="file" id="post-file" accept="image/*"></div>
-        <div class="input-group"><label>Content</label><textarea id="post-content" rows="4"></textarea></div>
-        <button onclick="handlePublish()">Post News</button>
+        <h3>Publish News (Local Device Only)</h3>
+        <input type="text" id="post-title" placeholder="Headline">
+        <textarea id="post-content" rows="4" placeholder="Story details..."></textarea>
+        <button onclick="handlePublish()">Post Locally</button>
     </div>
 
-    <h2 style="margin: 0 0 20px 10px">Latest Headlines</h2>
+    <h2 style="margin: 0 0 20px 10px">Global Headlines</h2>
     <div class="horizontal-scroll" id="feed-container"></div>
 
-    <div id="full-view-modal" class="modal">
-        <span class="close-btn" onclick="closeFullView()">&times;</span>
-        <div class="modal-content" id="modal-inner"></div>
+    <div id="full-view-modal" class="modal" onclick="closeFullView()">
+        <div class="modal-content" id="modal-inner" onclick="event.stopPropagation()"></div>
     </div>
 
     <script>
         const ADMIN_EMAILS = ['marioraziq09.gmail.com', 'marioraziq09@gmail.com'];
-        const DATA_KEY = 'marios_v12_data';
-        const LOGO_KEY = 'marios_v12_logo';
-        const VOTES_KEY = 'marios_v12_votes';
         
-        let newsData = JSON.parse(localStorage.getItem(DATA_KEY)) || [];
-        let userVotes = JSON.parse(localStorage.getItem(VOTES_KEY)) || {};
-        let currentUser = null;
+        // --- PUBLIC NEWS (Everyone sees this) ---
+        const GLOBAL_NEWS = [
+            {
+                id: 'g1',
+                title: "Mario's Media Portal is Live",
+                content: "The official news destination is now operational. Global readers can access the feed directly via the official domain.",
+                image: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&q=80&w=1000",
+                likes: 42,
+                dislikes: 0
+            }
+        ];
+
+        let localNews = JSON.parse(localStorage.getItem('marios_local_news')) || [];
+        let userVotes = JSON.parse(localStorage.getItem('marios_votes')) || {};
         let isAdmin = false;
 
         function login() {
             const email = document.getElementById('email-input').value.trim().toLowerCase();
-            const name = document.getElementById('name-input').value.trim() || "Guest";
-            const pfpFile = document.getElementById('pfp-input').files[0];
-
-            if(!email) return alert("Email required.");
+            if(!email) return;
             isAdmin = ADMIN_EMAILS.includes(email);
-
-            const complete = (pfp) => {
-                currentUser = { email, name, pfp: pfp || 'https://www.gravatar.com/avatar/0?d=mp' };
-                document.getElementById('login-panel').style.display = 'none';
-                if(isAdmin) document.getElementById('admin-panel').style.display = 'block';
-            };
-
-            if(pfpFile) {
-                const reader = new FileReader();
-                reader.onload = (e) => complete(e.target.result);
-                reader.readAsDataURL(pfpFile);
-            } else complete(null);
+            document.getElementById('login-panel').style.display = 'none';
+            if(isAdmin) document.getElementById('admin-panel').style.display = 'block';
+            renderFeed();
         }
 
         function handlePublish() {
-            const t = document.getElementById('post-title').value;
-            const c = document.getElementById('post-content').value;
-            const f = document.getElementById('post-file').files[0];
-            if(!t || !c) return;
-
-            const save = (img) => {
-                newsData.unshift({ id: 'p_'+Date.now(), title: t, content: c, image: img, likes: 0, dislikes: 0, comments: [] });
-                saveAndRender();
-                document.getElementById('post-title').value = '';
-                document.getElementById('post-content').value = '';
-            };
-
-            if(f) {
-                const r = new FileReader();
-                r.onload = (e) => save(e.target.result);
-                r.readAsDataURL(f);
-            } else save(null);
+            const title = document.getElementById('post-title').value;
+            const content = document.getElementById('post-content').value;
+            if(!title || !content) return;
+            
+            const newPost = { id: 'l_'+Date.now(), title, content, image: 'https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&q=80&w=800', likes: 0, dislikes: 0 };
+            localNews.unshift(newPost);
+            localStorage.setItem('marios_local_news', JSON.stringify(localNews));
+            document.getElementById('post-title').value = '';
+            document.getElementById('post-content').value = '';
+            renderFeed();
         }
 
-        function vote(i, type) {
-            const post = newsData[i];
-            if (userVotes[post.id]) return;
-
+        function vote(id, type) {
+            if(userVotes[id]) return;
+            const post = [...GLOBAL_NEWS, ...localNews].find(p => p.id === id);
             post[type]++;
-            userVotes[post.id] = type;
-            
-            localStorage.setItem(VOTES_KEY, JSON.stringify(userVotes));
-            saveAndRender();
-            openFullView(i);
+            userVotes[id] = type;
+            localStorage.setItem('marios_votes', JSON.stringify(userVotes));
+            renderFeed();
+            openFullView(id);
         }
 
         function deletePost(id) {
-            if(!confirm("Delete this?")) return;
-            newsData = newsData.filter(p => p.id !== id);
-            saveAndRender();
+            if(!confirm("Delete this local headline?")) return;
+            localNews = localNews.filter(p => p.id !== id);
+            localStorage.setItem('marios_local_news', JSON.stringify(localNews));
             closeFullView();
+            renderFeed();
         }
 
-        function saveEdit(id) {
-            const post = newsData.find(p => p.id === id);
-            post.title = document.getElementById('edit-title').value;
-            post.content = document.getElementById('edit-content').value;
-            saveAndRender();
-            openFullView(newsData.indexOf(post));
-        }
-
-        function openFullView(idx) {
-            const post = newsData[idx];
-            const modal = document.getElementById('full-view-modal');
-            const hasVoted = userVotes[post.id] || null;
-            
-            document.getElementById('modal-inner').innerHTML = `
-                ${post.image ? `<img src="${post.image}" style="width:100%; max-height:400px; object-fit:cover">` : ''}
-                <div class="full-body">
-                    ${isAdmin ? `
-                        <div class="admin-controls">
-                            <button class="btn-edit" onclick="document.getElementById('display-title').style.display='none';document.getElementById('display-content').style.display='none';document.getElementById('edit-title').style.display='block';document.getElementById('edit-content').style.display='block';document.getElementById('save-edit-btn').style.display='block'">✏️ Edit</button>
-                            <button class="btn-delete" onclick="deletePost('${post.id}')">🗑️ Delete</button>
-                        </div>
-                    ` : ''}
-                    
-                    <h2 id="display-title">${post.title}</h2>
-                    <input type="text" id="edit-title" value="${post.title}" style="display:none; margin-bottom:10px; font-size:1.5rem">
-                    
-                    <p id="display-content" style="white-space:pre-wrap; color:var(--text-secondary); margin-bottom:20px">${post.content}</p>
-                    <textarea id="edit-content" rows="6" style="display:none; margin-bottom:10px">${post.content}</textarea>
-                    
-                    <button id="save-edit-btn" style="display:none; background:var(--accent-color); color:black; margin-bottom:20px" onclick="saveEdit('${post.id}')">Save Changes</button>
-
-                    <div class="interaction-bar">
-                        <button class="btn-action ${hasVoted==='likes'?'voted':''}" onclick="vote(${idx},'likes')" ${hasVoted?'disabled':''}>👍 ${post.likes}</button>
-                        <button class="btn-action ${hasVoted==='dislikes'?'voted':''}" onclick="vote(${idx},'dislikes')" ${hasVoted?'disabled':''}>👎 ${post.dislikes}</button>
-                    </div>
-
-                    <h4>Comments</h4>
-                    <div style="display:flex; gap:10px; margin:15px 0">
-                        <input type="text" id="c-input" placeholder="Comment...">
-                        <button style="width:auto" onclick="addComment(${idx})">Post</button>
-                    </div>
-                    <div id="c-list">${post.comments.map((c, ci) => `
-                        <div class="comment-main">
-                            <img src="${c.userPfp}" class="user-avatar">
-                            <div style="flex-grow:1">
-                                <div style="display:flex; justify-content:space-between"><span class="user-name">${c.userName}</span><span class="comment-date">${c.date}</span></div>
-                                <div style="font-size:0.9rem">${c.text}</div>
-                                <button class="btn-edit" style="background:transparent; padding:0; border:none; color:var(--accent-color); margin-top:5px" onclick="document.getElementById('rb-${ci}').style.display='flex'">Reply</button>
-                            </div>
-                        </div>
-                        <div class="replies-container">
-                            ${c.replies.map(r => `<div style="font-size:0.85rem; margin-bottom:8px"><b>${r.userName}</b>: ${r.text} <small style="opacity:0.5; font-size:10px">${r.date}</small></div>`).join('')}
-                            <div id="rb-${ci}" style="display:none; gap:5px">
-                                <input type="text" id="ri-${ci}" placeholder="Reply..." style="padding:5px; font-size:0.8rem">
-                                <button style="width:auto; padding:5px 10px; font-size:0.8rem" onclick="submitReply(${idx}, ${ci})">Send</button>
-                            </div>
-                        </div>
-                    `).reverse().join('')}</div>
-                </div>
-            `;
-            modal.style.display = 'block';
-            document.body.style.overflow = 'hidden';
-        }
-
-        function addComment(i) {
-            const val = document.getElementById('c-input').value;
-            if(!val.trim() || !currentUser) return;
-            newsData[i].comments.push({ userName: currentUser.name, userPfp: currentUser.pfp, text: val, date: new Date().toLocaleDateString(), replies: [] });
-            saveAndRender();
-            openFullView(i);
-        }
-
-        function submitReply(pi, ci) {
-            const val = document.getElementById(`ri-${ci}`).value;
-            if(!val.trim() || !currentUser) return;
-            newsData[pi].comments[ci].replies.push({ userName: currentUser.name, text: val, date: new Date().toLocaleDateString() });
-            saveAndRender();
-            openFullView(pi);
-        }
-
-        function updateLogo() {
-            const f = document.getElementById('logo-upload').files[0];
-            if(f) {
-                const r = new FileReader();
-                r.onload = (e) => { localStorage.setItem(LOGO_KEY, e.target.result); applyLogo(); };
-                r.readAsDataURL(f);
-            }
-        }
-
-        function applyLogo() {
-            const l = localStorage.getItem(LOGO_KEY);
-            if(l) { 
-                document.getElementById('header-logo').src = l; 
-                document.getElementById('header-logo').style.display = 'block';
-                document.getElementById('site-title').style.display = 'none';
-            }
-        }
-
-        function saveAndRender() {
-            localStorage.setItem(DATA_KEY, JSON.stringify(newsData));
+        function renderFeed() {
             const container = document.getElementById('feed-container');
-            container.innerHTML = newsData.map((n, i) => `
-                <div class="news-card" onclick="openFullView(${i})">
-                    ${n.image ? `<img src="${n.image}" class="card-img">` : ''}
-                    <div class="card-body"><h3>${n.title}</h3><p>${n.content}</p></div>
+            const allNews = [...GLOBAL_NEWS, ...localNews];
+            container.innerHTML = allNews.map(n => `
+                <div class="news-card" onclick="openFullView('${n.id}')">
+                    <img src="${n.image}" class="card-img">
+                    <div class="card-body"><h3>${n.title}</h3></div>
                 </div>
             `).join('');
         }
 
-        function closeFullView() { document.getElementById('full-view-modal').style.display='none'; document.body.style.overflow='auto'; }
+        function openFullView(id) {
+            const n = [...GLOBAL_NEWS, ...localNews].find(p => p.id === id);
+            const voted = userVotes[id];
+            
+            document.getElementById('modal-inner').innerHTML = `
+                <img src="${n.image}" style="width:100%; max-height:350px; object-fit:cover">
+                <div class="full-body">
+                    ${isAdmin && id.startsWith('l_') ? `
+                        <div class="admin-controls">
+                            <button class="btn-delete" onclick="deletePost('${n.id}')">🗑️ Delete</button>
+                        </div>
+                    ` : ''}
+                    <h2>${n.title}</h2>
+                    <p style="margin:20px 0; color:var(--text-secondary); white-space:pre-wrap;">${n.content}</p>
+                    
+                    <div class="interaction-bar">
+                        <button class="btn-action ${voted==='likes'?'voted':''}" onclick="vote('${n.id}','likes')" ${voted?'disabled':''}>👍 ${n.likes}</button>
+                        <button class="btn-action ${voted==='dislikes'?'voted':''}" onclick="vote('${n.id}','dislikes')" ${voted?'disabled':''}>👎 ${n.dislikes}</button>
+                    </div>
+                    <button onclick="closeFullView()">Back to Feed</button>
+                </div>
+            `;
+            document.getElementById('full-view-modal').style.display = 'block';
+        }
 
-        applyLogo();
-        saveAndRender();
+        function closeFullView() { document.getElementById('full-view-modal').style.display = 'none'; }
+        
+        renderFeed();
     </script>
 </body>
 </html>
